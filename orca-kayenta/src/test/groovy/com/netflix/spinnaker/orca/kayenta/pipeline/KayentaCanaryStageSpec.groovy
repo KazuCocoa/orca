@@ -20,18 +20,22 @@ import java.time.Clock
 import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
-import java.time.temporal.ChronoUnit
+import com.netflix.spinnaker.orca.jackson.OrcaObjectMapper
 import com.netflix.spinnaker.orca.pipeline.WaitStage
 import com.netflix.spinnaker.orca.pipeline.model.Stage
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 import static com.netflix.spinnaker.orca.test.model.ExecutionBuilder.stage
+import static java.time.temporal.ChronoUnit.MINUTES
 
 class KayentaCanaryStageSpec extends Specification {
 
   @Shared
   WaitStage waitStage = new WaitStage()
+
+  @Shared
+  def mapper = OrcaObjectMapper.newInstance()
 
   @Unroll
   def "should not include any interval wait stages if start/end times are explicitly specified"() {
@@ -45,8 +49,8 @@ class KayentaCanaryStageSpec extends Specification {
           scopes                      : [[
                                            controlScope   : "myapp-v010",
                                            experimentScope: "myapp-v021",
-                                           startTimeIso   : "2017-01-01T01:02:34.567Z",
-                                           endTimeIso     : "2017-01-01T05:02:34.567Z",
+                                           startTime      : "2017-01-01T01:02:34.567Z",
+                                           endTime        : "2017-01-01T05:02:34.567Z",
                                          ]],
           beginCanaryAnalysisAfterMins: beginCanaryAnalysisAfterMins
         ]
@@ -80,8 +84,8 @@ class KayentaCanaryStageSpec extends Specification {
           scopes                      : [[
                                            controlScope   : "myapp-v010",
                                            experimentScope: "myapp-v021",
-                                           startTimeIso   : "2017-01-01T01:02:34.567Z",
-                                           endTimeIso     : "2017-01-01T05:02:34.567Z"
+                                           startTime      : "2017-01-01T01:02:34.567Z",
+                                           endTime        : "2017-01-01T05:02:34.567Z"
                                          ]],
           beginCanaryAnalysisAfterMins: beginCanaryAnalysisAfterMins,
           canaryAnalysisIntervalMins  : canaryAnalysisIntervalMins,
@@ -154,22 +158,22 @@ class KayentaCanaryStageSpec extends Specification {
               scopeName      : "default",
               controlScope   : "myapp-v010",
               experimentScope: "myapp-v021",
-              startTimeIso   : "2017-01-01T01:02:34.567Z",
-              endTimeIso     : "2017-01-01T05:02:34.567Z"
+              startTime      : "2017-01-01T01:02:34.567Z",
+              endTime        : "2017-01-01T05:02:34.567Z"
             ],
             [
               scopeName      : "otherScope",
               controlScope   : "myapp-v016",
               experimentScope: "myapp-v028",
-              startTimeIso   : "2017-02-03T04:02:34.567Z",
-              endTimeIso     : "2017-02-03T08:02:34.567Z"
+              startTime      : "2017-02-03T04:02:34.567Z",
+              endTime        : "2017-02-03T08:02:34.567Z"
             ],
             [
               scopeName      : "yetAnotherScope",
               controlScope   : "myapp-v023",
               experimentScope: "myapp-v025",
-              startTimeIso   : "2017-03-04T06:02:34.567Z",
-              endTimeIso     : "2017-03-04T10:02:34.567Z"
+              startTime      : "2017-03-04T06:02:34.567Z",
+              endTime        : "2017-03-04T10:02:34.567Z"
             ]
           ]
         ]
@@ -224,7 +228,7 @@ class KayentaCanaryStageSpec extends Specification {
     !warmupWaitPeriodMinutes || aroundStages[0].context.waitTime == Duration.ofMinutes(warmupWaitPeriodMinutes).getSeconds()
     aroundStages.find {
       it.type == "runCanary"
-    }.context.scopes.default.controlScope.start == startTimeInstant.plus(warmupWaitPeriodMinutes, ChronoUnit.MINUTES).toString()
+    }.context.scopes.default.controlScope.start == startTimeInstant.plus(warmupWaitPeriodMinutes, MINUTES).toString()
 
     where:
     beginCanaryAnalysisAfterMins || expectedStageTypes            | warmupWaitPeriodMinutes
@@ -396,8 +400,8 @@ class KayentaCanaryStageSpec extends Specification {
         Instant runCanaryPipelineStartInstant = Instant.parse(it.context.scopes[scopeName].controlScope.start)
         Instant runCanaryPipelineEndInstant = Instant.parse(it.context.scopes[scopeName].controlScope.end)
         Map ret = [
-          minutesFromInitialStartToCanaryStart: startTimeInstant.until(runCanaryPipelineStartInstant, ChronoUnit.MINUTES),
-          minutesFromInitialStartToCanaryEnd  : startTimeInstant.until(runCanaryPipelineEndInstant, ChronoUnit.MINUTES)
+          minutesFromInitialStartToCanaryStart: startTimeInstant.until(runCanaryPipelineStartInstant, MINUTES),
+          minutesFromInitialStartToCanaryEnd  : startTimeInstant.until(runCanaryPipelineEndInstant, MINUTES)
         ]
 
         if (it.context.metricsAccountName) {

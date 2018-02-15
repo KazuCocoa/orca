@@ -20,6 +20,7 @@ import com.netflix.spinnaker.orca.ExecutionStatus;
 import com.netflix.spinnaker.orca.OverridableTimeoutRetryableTask;
 import com.netflix.spinnaker.orca.TaskResult;
 import com.netflix.spinnaker.orca.kayenta.KayentaService;
+import com.netflix.spinnaker.orca.kayenta.model.Thresholds;
 import com.netflix.spinnaker.orca.pipeline.model.Stage;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -31,12 +32,11 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 import static com.netflix.spinnaker.orca.ExecutionStatus.*;
 import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
 
 @Component
 public class MonitorKayentaCanaryTask implements OverridableTimeoutRetryableTask {
@@ -65,16 +65,15 @@ public class MonitorKayentaCanaryTask implements OverridableTimeoutRetryableTask
     ExecutionStatus status = ExecutionStatus.valueOf(canaryResults.get("status").toString().toUpperCase());
 
     if (status == SUCCEEDED) {
-      Map<String, String> scoreThresholds = (Map<String, String>) context.get("scoreThresholds");
+      Thresholds scoreThresholds = (Thresholds) context.get("scoreThresholds");
+      // TODO: for the love of god can this be an actual type?
       Map<String, Object> result = (Map<String, Object>) canaryResults.get("result");
       double canaryScore = ((Map<String, Map<String, Double>>) result.get("judgeResult")).get("score").get("score");
       long lastUpdatedMs = (long) canaryResults.get("endTimeMillis");
       String lastUpdatedIso = (String) canaryResults.get("endTimeIso");
       String durationString = (String) result.get("canaryDuration");
 
-      Double marginal = Optional.ofNullable(scoreThresholds.get("marginal")).map(Double::parseDouble).orElse(null);
-      Double pass = Optional.ofNullable(scoreThresholds.get("pass")).map(Double::parseDouble).orElse(null);
-      if (marginal == null && pass == null) {
+      if (scoreThresholds.marginal == null && scoreThresholds.pass == null) {
         return new TaskResult(SUCCEEDED, mapOf(
           entry("canaryPipelineStatus", SUCCEEDED),
           entry("lastUpdated", lastUpdatedMs),
@@ -83,7 +82,7 @@ public class MonitorKayentaCanaryTask implements OverridableTimeoutRetryableTask
           entry("canaryScore", canaryScore),
           entry("canaryScoreMessage", "No score thresholds were specified.")
         ));
-      } else if (marginal == null) {
+      } else if (scoreThresholds.marginal == null) {
         return new TaskResult(SUCCEEDED, mapOf(
           entry("canaryPipelineStatus", SUCCEEDED),
           entry("lastUpdated", lastUpdatedMs),
@@ -92,7 +91,7 @@ public class MonitorKayentaCanaryTask implements OverridableTimeoutRetryableTask
           entry("canaryScore", canaryScore),
           entry("canaryScoreMessage", "No marginal score threshold was specified.")
         ));
-      } else if (canaryScore <= marginal) {
+      } else if (canaryScore <= scoreThresholds.marginal) {
         return new TaskResult(TERMINAL, mapOf(
           entry("canaryPipelineStatus", SUCCEEDED),
           entry("lastUpdated", lastUpdatedMs),
@@ -113,25 +112,19 @@ public class MonitorKayentaCanaryTask implements OverridableTimeoutRetryableTask
     }
 
     if (status.isHalt()) {
-      Map<String, Object> stageOutputs = mapOf(entry("canaryPipelineStatus", status));
+      Map<String, Object> stageOutputs = singletonMap("canaryPipelineStatus", status);
 
       if (canaryResults.get("exception") != null) {
         stageOutputs.put("exception", canaryResults.get("exception"));
       } else if (status == CANCELED) {
-        stageOutputs.put("exception", mapOf(entry("details", mapOf(entry("errors", singletonList("Canary execution was canceled."))))));
+        stageOutputs.put("exception", singletonMap("details", singletonMap("errors", singletonList("Canary execution was canceled."))));
       }
 
       // Indicates a failure of some sort.
       return new TaskResult(TERMINAL, stageOutputs);
     }
 
-    return new TaskResult(RUNNING, mapOf(entry("canaryPipelineStatus", status)));
-  }
-
-  private static <K, V> Map<K, V> map(Consumer<Map<K, V>> closure) {
-    Map<K, V> map = new HashMap<>();
-    closure.accept(map);
-    return map;
+    return new TaskResult(RUNNING, singletonMap("canaryPipelineStatus", status));
   }
 
   private static <K, V> Pair<K, V> entry(K key, V value) {
