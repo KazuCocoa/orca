@@ -16,18 +16,16 @@
 
 package com.netflix.spinnaker.orca.kayenta.pipeline
 
-import com.netflix.spinnaker.orca.pipeline.WaitStage
-import com.netflix.spinnaker.orca.pipeline.model.Stage
-import spock.lang.Shared
-import spock.lang.Specification
-import spock.lang.Unroll
-
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
-
+import com.netflix.spinnaker.orca.pipeline.WaitStage
+import com.netflix.spinnaker.orca.pipeline.model.Stage
+import spock.lang.Shared
+import spock.lang.Specification
+import spock.lang.Unroll
 import static com.netflix.spinnaker.orca.test.model.ExecutionBuilder.stage
 
 class KayentaCanaryStageSpec extends Specification {
@@ -45,18 +43,16 @@ class KayentaCanaryStageSpec extends Specification {
         canaryConfig: [
           canaryConfigId              : "MySampleStackdriverCanaryConfig",
           scopes                      : [[
-            controlScope   : "myapp-v010",
-            experimentScope: "myapp-v021",
-            startTimeIso   : "2017-01-01T01:02:34.567Z",
-            endTimeIso     : "2017-01-01T05:02:34.567Z",
-          ]],
+                                           controlScope   : "myapp-v010",
+                                           experimentScope: "myapp-v021",
+                                           startTimeIso   : "2017-01-01T01:02:34.567Z",
+                                           endTimeIso     : "2017-01-01T05:02:34.567Z",
+                                         ]],
           beginCanaryAnalysisAfterMins: beginCanaryAnalysisAfterMins
         ]
       ]
     }
-    def builder = new KayentaCanaryStage()
-    builder.clock = Clock.systemUTC()
-    builder.waitStage = waitStage
+    def builder = new KayentaCanaryStage(Clock.systemUTC(), waitStage)
 
     when:
     def aroundStages = builder.aroundStages(kayentaCanaryStage)
@@ -82,21 +78,19 @@ class KayentaCanaryStageSpec extends Specification {
         canaryConfig: [
           canaryConfigId              : "MySampleStackdriverCanaryConfig",
           scopes                      : [[
-            controlScope   : "myapp-v010",
-            experimentScope: "myapp-v021",
-            startTimeIso   : "2017-01-01T01:02:34.567Z",
-            endTimeIso     : "2017-01-01T05:02:34.567Z"
-          ]],
+                                           controlScope   : "myapp-v010",
+                                           experimentScope: "myapp-v021",
+                                           startTimeIso   : "2017-01-01T01:02:34.567Z",
+                                           endTimeIso     : "2017-01-01T05:02:34.567Z"
+                                         ]],
           beginCanaryAnalysisAfterMins: beginCanaryAnalysisAfterMins,
           canaryAnalysisIntervalMins  : canaryAnalysisIntervalMins,
           lookbackMins                : lookbackMins
         ]
       ]
     }
-    def builder = new KayentaCanaryStage()
     def startTimeInstant = Instant.parse("2017-01-01T01:02:34.567Z")
-    builder.clock = Clock.fixed(startTimeInstant, ZoneId.systemDefault())
-    builder.waitStage = waitStage
+    def builder = new KayentaCanaryStage(Clock.fixed(startTimeInstant, ZoneId.systemDefault()), waitStage)
 
     when:
     def aroundStages = builder.aroundStages(kayentaCanaryStage)
@@ -181,10 +175,11 @@ class KayentaCanaryStageSpec extends Specification {
         ]
       ]
     }
-    def builder = new KayentaCanaryStage()
     def startTimeInstant = Instant.parse("2017-01-01T01:02:34.567Z")
-    builder.clock = Clock.fixed(startTimeInstant, ZoneId.systemDefault())
-    builder.waitStage = waitStage
+    def builder = new KayentaCanaryStage(
+      Clock.fixed(startTimeInstant, ZoneId.systemDefault()),
+      waitStage
+    )
     def aroundStages = builder.aroundStages(kayentaCanaryStage)
 
     when:
@@ -207,18 +202,19 @@ class KayentaCanaryStageSpec extends Specification {
         canaryConfig: [
           canaryConfigId              : "MySampleStackdriverCanaryConfig",
           scopes                      : [[
-            controlScope   : "myapp-v010",
-            experimentScope: "myapp-v021"
-          ]],
+                                           controlScope   : "myapp-v010",
+                                           experimentScope: "myapp-v021"
+                                         ]],
           lifetimeHours               : "1",
           beginCanaryAnalysisAfterMins: beginCanaryAnalysisAfterMins
         ]
       ]
     }
-    def builder = new KayentaCanaryStage()
     def startTimeInstant = Instant.parse("2017-01-01T01:02:34.567Z")
-    builder.clock = Clock.fixed(startTimeInstant, ZoneId.systemDefault())
-    builder.waitStage = waitStage
+    def builder = new KayentaCanaryStage(
+      Clock.fixed(startTimeInstant, ZoneId.systemDefault()),
+      waitStage
+    )
 
     when:
     def aroundStages = builder.aroundStages(kayentaCanaryStage)
@@ -248,9 +244,9 @@ class KayentaCanaryStageSpec extends Specification {
         canaryConfig: [
           canaryConfigId              : "MySampleStackdriverCanaryConfig",
           scopes                      : [[
-            controlScope   : "myapp-v010",
-            experimentScope: "myapp-v021"
-          ]],
+                                           controlScope   : "myapp-v010",
+                                           experimentScope: "myapp-v021"
+                                         ]],
           beginCanaryAnalysisAfterMins: beginCanaryAnalysisAfterMins,
           canaryAnalysisIntervalMins  : canaryAnalysisIntervalMins,
           lookbackMins                : lookbackMins,
@@ -258,10 +254,11 @@ class KayentaCanaryStageSpec extends Specification {
         ]
       ]
     }
-    def builder = new KayentaCanaryStage()
     def startTimeInstant = Instant.parse("2017-01-01T01:02:34.567Z")
-    builder.clock = Clock.fixed(startTimeInstant, ZoneId.systemDefault())
-    builder.waitStage = waitStage
+    def builder = new KayentaCanaryStage(
+      Clock.fixed(startTimeInstant, ZoneId.systemDefault()),
+      waitStage
+    )
 
     when:
     def aroundStages = builder.aroundStages(kayentaCanaryStage)
@@ -364,20 +361,21 @@ class KayentaCanaryStageSpec extends Specification {
           metricsAccountName        : "atlas-acct-1",
           canaryConfigId            : "MySampleAtlasCanaryConfig",
           scopes                    : [[
-            controlScope       : "some.host.node",
-            experimentScope    : "some.other.host.node",
-            step               : "PT60S",
-            extendedScopeParams: [type: "node"]
-          ]],
+                                         controlScope       : "some.host.node",
+                                         experimentScope    : "some.other.host.node",
+                                         step               : "PT60S",
+                                         extendedScopeParams: [type: "node"]
+                                       ]],
           canaryAnalysisIntervalMins: Duration.ofHours(6).toMinutes(),
           lifetimeHours             : "12"
         ]
       ]
     }
-    def builder = new KayentaCanaryStage()
     def startTimeInstant = Instant.parse("2017-01-01T01:02:34.567Z")
-    builder.clock = Clock.fixed(startTimeInstant, ZoneId.systemDefault())
-    builder.waitStage = waitStage
+    def builder = new KayentaCanaryStage(
+      Clock.fixed(startTimeInstant, ZoneId.systemDefault()),
+      waitStage
+    )
 
     when:
     def aroundStages = builder.aroundStages(kayentaCanaryStage)
