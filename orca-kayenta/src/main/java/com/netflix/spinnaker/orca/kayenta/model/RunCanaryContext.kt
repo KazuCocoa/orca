@@ -16,12 +16,14 @@
 
 package com.netflix.spinnaker.orca.kayenta.model
 
+import com.netflix.spinnaker.orca.kayenta.CanaryScopes
+import com.netflix.spinnaker.orca.kayenta.Thresholds
 import java.util.Collections.emptyMap
 
 data class RunCanaryContext(
   val metricsAccountName: String?,
   val storageAccountName: String?,
-  val canaryConfigId: String?,
-  val scopes: Map<String, Map<String, CanaryScope>> = emptyMap(),
-  val scoreThresholds: Thresholds = Thresholds()
+  val canaryConfigId: String,
+  val scopes: Map<String, CanaryScopes> = emptyMap(),
+  val scoreThresholds: Thresholds
 )

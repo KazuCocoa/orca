@@ -1,8 +1,8 @@
 package com.netflix.spinnaker.orca.kayenta
 
-import com.netflix.spinnaker.orca.kayenta.model.CanaryScope
-import com.netflix.spinnaker.orca.kayenta.model.Thresholds
 import retrofit.http.*
+import java.time.Duration
+import java.time.Instant
 
 interface KayentaService {
 
@@ -11,15 +11,15 @@ interface KayentaService {
     @Path("canaryConfigId") canaryConfigId: String,
     @Query("application") application: String,
     @Query("parentPipelineExecutionId") parentPipelineExecutionId: String,
-    @Query("metricsAccountName") metricsAccountName: String,
-    @Query("configurationAccountName") configurationAccountName: String,
-    @Query("storageAccountName") storageAccountName: String,
+    @Query("metricsAccountName") metricsAccountName: String?,
+    @Query("configurationAccountName") configurationAccountName: String?,
+    @Query("storageAccountName") storageAccountName: String?,
     @Body canaryExecutionRequest: CanaryExecutionRequest
   ): Map<*, *>
 
   @GET("/canary/{canaryExecutionId}")
   fun getCanaryResults(
-    @Query("storageAccountName") storageAccountName: String,
+    @Query("storageAccountName") storageAccountName: String?,
     @Path("canaryExecutionId") canaryExecutionId: String
   ): Map<*, *>
 
@@ -28,9 +28,28 @@ interface KayentaService {
     @Path("executionId") executionId: String,
     @Body ignored: String
   ): Map<*, *>
-
-  data class CanaryExecutionRequest(
-    var scopes: Map<String, Map<String, CanaryScope>>,
-    var thresholds: Thresholds
-  )
 }
+
+data class CanaryExecutionRequest(
+  var scopes: Map<String, CanaryScopes> = emptyMap(),
+  var thresholds: Thresholds
+)
+
+data class CanaryScopes(
+  val controlScope: CanaryScope,
+  val experimentScope: CanaryScope
+)
+
+data class CanaryScope(
+  val scope: String,
+  val region: String?,
+  var start: Instant, // TODO: val
+  var end: Instant, // TODO: val
+  val step: Duration = Duration.ofSeconds(60),
+  val extendedScopeParams: Map<String, String> = emptyMap()
+)
+
+data class Thresholds(
+  val pass: Int,
+  val marginal: Int
+)

@@ -19,8 +19,8 @@ package com.netflix.spinnaker.orca.kayenta.tasks
 import com.netflix.spinnaker.orca.ExecutionStatus.SUCCEEDED
 import com.netflix.spinnaker.orca.Task
 import com.netflix.spinnaker.orca.TaskResult
+import com.netflix.spinnaker.orca.kayenta.CanaryExecutionRequest
 import com.netflix.spinnaker.orca.kayenta.KayentaService
-import com.netflix.spinnaker.orca.kayenta.KayentaService.CanaryExecutionRequest
 import com.netflix.spinnaker.orca.kayenta.model.RunCanaryContext
 import com.netflix.spinnaker.orca.pipeline.model.Stage
 import org.slf4j.LoggerFactory
@@ -37,11 +37,11 @@ class RunKayentaCanaryTask(
   override fun execute(stage: Stage): TaskResult {
     val context = stage.mapTo(RunCanaryContext::class.java)
     val canaryPipelineExecutionId = kayentaService.create(
-      context.canaryConfigId!!,
+      context.canaryConfigId,
       stage.execution.application,
       stage.execution.id,
-      context.metricsAccountName!!,
-      context.storageAccountName!! /* configurationAccountName */, // TODO(duftler): Propagate configurationAccountName properly.
+      context.metricsAccountName,
+      context.storageAccountName /* configurationAccountName */, // TODO(duftler): Propagate configurationAccountName properly.
       context.storageAccountName,
       CanaryExecutionRequest(context.scopes, context.scoreThresholds)
     )["canaryExecutionId"] as String

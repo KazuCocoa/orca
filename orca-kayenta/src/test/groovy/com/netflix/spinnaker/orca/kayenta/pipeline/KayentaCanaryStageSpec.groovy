@@ -46,12 +46,13 @@ class KayentaCanaryStageSpec extends Specification {
       context = [
         canaryConfig: [
           canaryConfigId              : "MySampleStackdriverCanaryConfig",
+          startTime                   : "2017-01-01T01:02:34.567Z",
+          endTime                     : "2017-01-01T05:02:34.567Z",
           scopes                      : [[
                                            controlScope   : "myapp-v010",
-                                           experimentScope: "myapp-v021",
-                                           startTime      : "2017-01-01T01:02:34.567Z",
-                                           endTime        : "2017-01-01T05:02:34.567Z",
+                                           experimentScope: "myapp-v021"
                                          ]],
+          scoreThresholds             : [marginal: 75, pass: 90],
           beginCanaryAnalysisAfterMins: beginCanaryAnalysisAfterMins
         ]
       ]
@@ -81,12 +82,13 @@ class KayentaCanaryStageSpec extends Specification {
       context = [
         canaryConfig: [
           canaryConfigId              : "MySampleStackdriverCanaryConfig",
+          startTime                   : "2017-01-01T01:02:34.567Z",
+          endTime                     : "2017-01-01T05:02:34.567Z",
           scopes                      : [[
                                            controlScope   : "myapp-v010",
-                                           experimentScope: "myapp-v021",
-                                           startTime      : "2017-01-01T01:02:34.567Z",
-                                           endTime        : "2017-01-01T05:02:34.567Z"
+                                           experimentScope: "myapp-v021"
                                          ]],
+          scoreThresholds             : [marginal: 75, pass: 90],
           beginCanaryAnalysisAfterMins: beginCanaryAnalysisAfterMins,
           canaryAnalysisIntervalMins  : canaryAnalysisIntervalMins,
           lookbackMins                : lookbackMins
@@ -105,43 +107,43 @@ class KayentaCanaryStageSpec extends Specification {
 
     where:
     beginCanaryAnalysisAfterMins | canaryAnalysisIntervalMins | lookbackMins || stageSummary
-    null                         | null                       | null         || [[minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 240, step: "60"]]
-    null                         | ""                         | ""           || [[minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 240, step: "60"]]
-    null                         | "0"                        | "0"          || [[minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 240, step: "60"]]
-    null                         | "60"                       | null         || [[minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 60, step: "60"],
-                                                                                 [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 120, step: "60"],
-                                                                                 [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 180, step: "60"],
-                                                                                 [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 240, step: "60"]]
+    null                         | null                       | null         || [[minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 240, step: "PT1M"]]
+    null                         | ""                         | ""           || [[minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 240, step: "PT1M"]]
+    null                         | "0"                        | "0"          || [[minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 240, step: "PT1M"]]
+    null                         | "60"                       | null         || [[minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 60, step: "PT1M"],
+                                                                                 [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 120, step: "PT1M"],
+                                                                                 [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 180, step: "PT1M"],
+                                                                                 [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 240, step: "PT1M"]]
     "15"                         | null                       | ""           || [[wait: 900],
-                                                                                 [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 240, step: "60"]]
+                                                                                 [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 240, step: "PT1M"]]
     "15"                         | ""                         | "0"          || [[wait: 900],
-                                                                                 [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 240, step: "60"]]
+                                                                                 [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 240, step: "PT1M"]]
     "15"                         | "0"                        | null         || [[wait: 900],
-                                                                                 [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 240, step: "60"]]
+                                                                                 [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 240, step: "PT1M"]]
     "15"                         | "60"                       | ""           || [[wait: 900],
-                                                                                 [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 60, step: "60"],
-                                                                                 [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 120, step: "60"],
-                                                                                 [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 180, step: "60"],
-                                                                                 [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 240, step: "60"]]
-    null                         | null                       | "120"        || [[minutesFromInitialStartToCanaryStart: 120, minutesFromInitialStartToCanaryEnd: 240, step: "60"]]
-    null                         | ""                         | "60"         || [[minutesFromInitialStartToCanaryStart: 180, minutesFromInitialStartToCanaryEnd: 240, step: "60"]]
-    null                         | "0"                        | "60"         || [[minutesFromInitialStartToCanaryStart: 180, minutesFromInitialStartToCanaryEnd: 240, step: "60"]]
-    null                         | "60"                       | "60"         || [[minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 60, step: "60"],
-                                                                                 [minutesFromInitialStartToCanaryStart: 60, minutesFromInitialStartToCanaryEnd: 120, step: "60"],
-                                                                                 [minutesFromInitialStartToCanaryStart: 120, minutesFromInitialStartToCanaryEnd: 180, step: "60"],
-                                                                                 [minutesFromInitialStartToCanaryStart: 180, minutesFromInitialStartToCanaryEnd: 240, step: "60"]]
+                                                                                 [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 60, step: "PT1M"],
+                                                                                 [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 120, step: "PT1M"],
+                                                                                 [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 180, step: "PT1M"],
+                                                                                 [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 240, step: "PT1M"]]
+    null                         | null                       | "120"        || [[minutesFromInitialStartToCanaryStart: 120, minutesFromInitialStartToCanaryEnd: 240, step: "PT1M"]]
+    null                         | ""                         | "60"         || [[minutesFromInitialStartToCanaryStart: 180, minutesFromInitialStartToCanaryEnd: 240, step: "PT1M"]]
+    null                         | "0"                        | "60"         || [[minutesFromInitialStartToCanaryStart: 180, minutesFromInitialStartToCanaryEnd: 240, step: "PT1M"]]
+    null                         | "60"                       | "60"         || [[minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 60, step: "PT1M"],
+                                                                                 [minutesFromInitialStartToCanaryStart: 60, minutesFromInitialStartToCanaryEnd: 120, step: "PT1M"],
+                                                                                 [minutesFromInitialStartToCanaryStart: 120, minutesFromInitialStartToCanaryEnd: 180, step: "PT1M"],
+                                                                                 [minutesFromInitialStartToCanaryStart: 180, minutesFromInitialStartToCanaryEnd: 240, step: "PT1M"]]
     "15"                         | null                       | "120"        || [[wait: 900],
-                                                                                 [minutesFromInitialStartToCanaryStart: 120, minutesFromInitialStartToCanaryEnd: 240, step: "60"]]
+                                                                                 [minutesFromInitialStartToCanaryStart: 120, minutesFromInitialStartToCanaryEnd: 240, step: "PT1M"]]
     "15"                         | ""                         | "60"         || [[wait: 900],
-                                                                                 [minutesFromInitialStartToCanaryStart: 180, minutesFromInitialStartToCanaryEnd: 240, step: "60"]]
+                                                                                 [minutesFromInitialStartToCanaryStart: 180, minutesFromInitialStartToCanaryEnd: 240, step: "PT1M"]]
     "15"                         | "0"                        | "60"         || [[wait: 900],
-                                                                                 [minutesFromInitialStartToCanaryStart: 180, minutesFromInitialStartToCanaryEnd: 240, step: "60"]]
+                                                                                 [minutesFromInitialStartToCanaryStart: 180, minutesFromInitialStartToCanaryEnd: 240, step: "PT1M"]]
     "15"                         | "60"                       | "60"         || [[wait: 900],
-                                                                                 [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 60, step: "60"],
-                                                                                 [minutesFromInitialStartToCanaryStart: 60, minutesFromInitialStartToCanaryEnd: 120, step: "60"],
-                                                                                 [minutesFromInitialStartToCanaryStart: 120, minutesFromInitialStartToCanaryEnd: 180, step: "60"],
-                                                                                 [minutesFromInitialStartToCanaryStart: 180, minutesFromInitialStartToCanaryEnd: 240, step: "60"]]
-    null                         | "300"                      | null         || [[minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 240, step: "60"]]
+                                                                                 [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 60, step: "PT1M"],
+                                                                                 [minutesFromInitialStartToCanaryStart: 60, minutesFromInitialStartToCanaryEnd: 120, step: "PT1M"],
+                                                                                 [minutesFromInitialStartToCanaryStart: 120, minutesFromInitialStartToCanaryEnd: 180, step: "PT1M"],
+                                                                                 [minutesFromInitialStartToCanaryStart: 180, minutesFromInitialStartToCanaryEnd: 240, step: "PT1M"]]
+    null                         | "300"                      | null         || [[minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 240, step: "PT1M"]]
   }
 
   @Unroll
@@ -152,30 +154,27 @@ class KayentaCanaryStageSpec extends Specification {
       name = "Run Kayenta Canary"
       context = [
         canaryConfig: [
-          canaryConfigId: "MySampleStackdriverCanaryConfig",
-          scopes        : [
+          canaryConfigId : "MySampleStackdriverCanaryConfig",
+          startTime      : "2017-01-01T01:02:34.567Z",
+          endTime        : "2017-01-01T05:02:34.567Z",
+          scopes         : [
             [
               scopeName      : "default",
               controlScope   : "myapp-v010",
-              experimentScope: "myapp-v021",
-              startTime      : "2017-01-01T01:02:34.567Z",
-              endTime        : "2017-01-01T05:02:34.567Z"
+              experimentScope: "myapp-v021"
             ],
             [
               scopeName      : "otherScope",
               controlScope   : "myapp-v016",
-              experimentScope: "myapp-v028",
-              startTime      : "2017-02-03T04:02:34.567Z",
-              endTime        : "2017-02-03T08:02:34.567Z"
+              experimentScope: "myapp-v028"
             ],
             [
               scopeName      : "yetAnotherScope",
               controlScope   : "myapp-v023",
-              experimentScope: "myapp-v025",
-              startTime      : "2017-03-04T06:02:34.567Z",
-              endTime        : "2017-03-04T10:02:34.567Z"
+              experimentScope: "myapp-v025"
             ]
-          ]
+          ],
+          scoreThresholds: [marginal: 75, pass: 90]
         ]
       ]
     }
@@ -190,7 +189,7 @@ class KayentaCanaryStageSpec extends Specification {
     def summary = collectSummary(aroundStages, startTimeInstant, scopeName)
 
     then:
-    summary == [[minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 240, step: "60"]]
+    summary == [[minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: 240, step: "PT1M"]]
 
     where:
     scopeName << ["default", "otherScope", "yetAnotherScope"]
@@ -209,6 +208,7 @@ class KayentaCanaryStageSpec extends Specification {
                                            controlScope   : "myapp-v010",
                                            experimentScope: "myapp-v021"
                                          ]],
+          scoreThresholds             : [marginal: 75, pass: 90],
           lifetimeHours               : "1",
           beginCanaryAnalysisAfterMins: beginCanaryAnalysisAfterMins
         ]
@@ -251,6 +251,7 @@ class KayentaCanaryStageSpec extends Specification {
                                            controlScope   : "myapp-v010",
                                            experimentScope: "myapp-v021"
                                          ]],
+          scoreThresholds             : [marginal: 75, pass: 90],
           beginCanaryAnalysisAfterMins: beginCanaryAnalysisAfterMins,
           canaryAnalysisIntervalMins  : canaryAnalysisIntervalMins,
           lookbackMins                : lookbackMins,
@@ -274,85 +275,85 @@ class KayentaCanaryStageSpec extends Specification {
     where:
     beginCanaryAnalysisAfterMins | canaryAnalysisIntervalMins           | lookbackMins || stageSummary
     null                         | null                                 | null         || [[wait: Duration.ofHours(48).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: Duration.ofHours(48).toMinutes(), step: "60"]]
+                                                                                           [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: Duration.ofHours(48).toMinutes(), step: "PT1M"]]
     null                         | ""                                   | ""           || [[wait: Duration.ofHours(48).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: Duration.ofHours(48).toMinutes(), step: "60"]]
+                                                                                           [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: Duration.ofHours(48).toMinutes(), step: "PT1M"]]
     null                         | "0"                                  | "0"          || [[wait: Duration.ofHours(48).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: Duration.ofHours(48).toMinutes(), step: "60"]]
+                                                                                           [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: Duration.ofHours(48).toMinutes(), step: "PT1M"]]
     null                         | Duration.ofHours(8).toMinutes() + "" | null         || [[wait: Duration.ofHours(8).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: Duration.ofHours(8).toMinutes(), step: "60"],
+                                                                                           [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: Duration.ofHours(8).toMinutes(), step: "PT1M"],
                                                                                            [wait: Duration.ofHours(8).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: Duration.ofHours(16).toMinutes(), step: "60"],
+                                                                                           [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: Duration.ofHours(16).toMinutes(), step: "PT1M"],
                                                                                            [wait: Duration.ofHours(8).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: Duration.ofHours(24).toMinutes(), step: "60"],
+                                                                                           [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: Duration.ofHours(24).toMinutes(), step: "PT1M"],
                                                                                            [wait: Duration.ofHours(8).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: Duration.ofHours(32).toMinutes(), step: "60"],
+                                                                                           [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: Duration.ofHours(32).toMinutes(), step: "PT1M"],
                                                                                            [wait: Duration.ofHours(8).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: Duration.ofHours(40).toMinutes(), step: "60"],
+                                                                                           [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: Duration.ofHours(40).toMinutes(), step: "PT1M"],
                                                                                            [wait: Duration.ofHours(8).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: Duration.ofHours(48).toMinutes(), step: "60"]]
+                                                                                           [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: Duration.ofHours(48).toMinutes(), step: "PT1M"]]
     "45"                         | null                                 | ""           || [[wait: Duration.ofMinutes(45).getSeconds()],
                                                                                            [wait: Duration.ofHours(48).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: 45, minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(48).toMinutes(), step: "60"]]
+                                                                                           [minutesFromInitialStartToCanaryStart: 45, minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(48).toMinutes(), step: "PT1M"]]
     "45"                         | ""                                   | "0"          || [[wait: Duration.ofMinutes(45).getSeconds()],
                                                                                            [wait: Duration.ofHours(48).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: 45, minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(48).toMinutes(), step: "60"]]
+                                                                                           [minutesFromInitialStartToCanaryStart: 45, minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(48).toMinutes(), step: "PT1M"]]
     "45"                         | "0"                                  | null         || [[wait: Duration.ofMinutes(45).getSeconds()],
                                                                                            [wait: Duration.ofHours(48).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: 45, minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(48).toMinutes(), step: "60"]]
+                                                                                           [minutesFromInitialStartToCanaryStart: 45, minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(48).toMinutes(), step: "PT1M"]]
     "45"                         | Duration.ofHours(8).toMinutes() + "" | ""           || [[wait: Duration.ofMinutes(45).getSeconds()],
                                                                                            [wait: Duration.ofHours(8).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: 45, minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(8).toMinutes(), step: "60"],
+                                                                                           [minutesFromInitialStartToCanaryStart: 45, minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(8).toMinutes(), step: "PT1M"],
                                                                                            [wait: Duration.ofHours(8).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: 45, minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(16).toMinutes(), step: "60"],
+                                                                                           [minutesFromInitialStartToCanaryStart: 45, minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(16).toMinutes(), step: "PT1M"],
                                                                                            [wait: Duration.ofHours(8).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: 45, minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(24).toMinutes(), step: "60"],
+                                                                                           [minutesFromInitialStartToCanaryStart: 45, minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(24).toMinutes(), step: "PT1M"],
                                                                                            [wait: Duration.ofHours(8).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: 45, minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(32).toMinutes(), step: "60"],
+                                                                                           [minutesFromInitialStartToCanaryStart: 45, minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(32).toMinutes(), step: "PT1M"],
                                                                                            [wait: Duration.ofHours(8).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: 45, minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(40).toMinutes(), step: "60"],
+                                                                                           [minutesFromInitialStartToCanaryStart: 45, minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(40).toMinutes(), step: "PT1M"],
                                                                                            [wait: Duration.ofHours(8).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: 45, minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(48).toMinutes(), step: "60"]]
+                                                                                           [minutesFromInitialStartToCanaryStart: 45, minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(48).toMinutes(), step: "PT1M"]]
     null                         | null                                 | "60"         || [[wait: Duration.ofHours(48).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: Duration.ofHours(47).toMinutes(), minutesFromInitialStartToCanaryEnd: Duration.ofHours(48).toMinutes(), step: "60"]]
+                                                                                           [minutesFromInitialStartToCanaryStart: Duration.ofHours(47).toMinutes(), minutesFromInitialStartToCanaryEnd: Duration.ofHours(48).toMinutes(), step: "PT1M"]]
     null                         | ""                                   | "60"         || [[wait: Duration.ofHours(48).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: Duration.ofHours(47).toMinutes(), minutesFromInitialStartToCanaryEnd: Duration.ofHours(48).toMinutes(), step: "60"]]
+                                                                                           [minutesFromInitialStartToCanaryStart: Duration.ofHours(47).toMinutes(), minutesFromInitialStartToCanaryEnd: Duration.ofHours(48).toMinutes(), step: "PT1M"]]
     null                         | "0"                                  | "60"         || [[wait: Duration.ofHours(48).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: Duration.ofHours(47).toMinutes(), minutesFromInitialStartToCanaryEnd: Duration.ofHours(48).toMinutes(), step: "60"]]
+                                                                                           [minutesFromInitialStartToCanaryStart: Duration.ofHours(47).toMinutes(), minutesFromInitialStartToCanaryEnd: Duration.ofHours(48).toMinutes(), step: "PT1M"]]
     null                         | Duration.ofHours(8).toMinutes() + "" | "60"         || [[wait: Duration.ofHours(8).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: Duration.ofHours(7).toMinutes(), minutesFromInitialStartToCanaryEnd: Duration.ofHours(8).toMinutes(), step: "60"],
+                                                                                           [minutesFromInitialStartToCanaryStart: Duration.ofHours(7).toMinutes(), minutesFromInitialStartToCanaryEnd: Duration.ofHours(8).toMinutes(), step: "PT1M"],
                                                                                            [wait: Duration.ofHours(8).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: Duration.ofHours(15).toMinutes(), minutesFromInitialStartToCanaryEnd: Duration.ofHours(16).toMinutes(), step: "60"],
+                                                                                           [minutesFromInitialStartToCanaryStart: Duration.ofHours(15).toMinutes(), minutesFromInitialStartToCanaryEnd: Duration.ofHours(16).toMinutes(), step: "PT1M"],
                                                                                            [wait: Duration.ofHours(8).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: Duration.ofHours(23).toMinutes(), minutesFromInitialStartToCanaryEnd: Duration.ofHours(24).toMinutes(), step: "60"],
+                                                                                           [minutesFromInitialStartToCanaryStart: Duration.ofHours(23).toMinutes(), minutesFromInitialStartToCanaryEnd: Duration.ofHours(24).toMinutes(), step: "PT1M"],
                                                                                            [wait: Duration.ofHours(8).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: Duration.ofHours(31).toMinutes(), minutesFromInitialStartToCanaryEnd: Duration.ofHours(32).toMinutes(), step: "60"],
+                                                                                           [minutesFromInitialStartToCanaryStart: Duration.ofHours(31).toMinutes(), minutesFromInitialStartToCanaryEnd: Duration.ofHours(32).toMinutes(), step: "PT1M"],
                                                                                            [wait: Duration.ofHours(8).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: Duration.ofHours(39).toMinutes(), minutesFromInitialStartToCanaryEnd: Duration.ofHours(40).toMinutes(), step: "60"],
+                                                                                           [minutesFromInitialStartToCanaryStart: Duration.ofHours(39).toMinutes(), minutesFromInitialStartToCanaryEnd: Duration.ofHours(40).toMinutes(), step: "PT1M"],
                                                                                            [wait: Duration.ofHours(8).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: Duration.ofHours(47).toMinutes(), minutesFromInitialStartToCanaryEnd: Duration.ofHours(48).toMinutes(), step: "60"]]
+                                                                                           [minutesFromInitialStartToCanaryStart: Duration.ofHours(47).toMinutes(), minutesFromInitialStartToCanaryEnd: Duration.ofHours(48).toMinutes(), step: "PT1M"]]
     "45"                         | null                                 | "60"         || [[wait: Duration.ofMinutes(45).getSeconds()],
                                                                                            [wait: Duration.ofHours(48).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: 45 + Duration.ofHours(47).toMinutes(), minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(48).toMinutes(), step: "60"]]
+                                                                                           [minutesFromInitialStartToCanaryStart: 45 + Duration.ofHours(47).toMinutes(), minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(48).toMinutes(), step: "PT1M"]]
     "45"                         | ""                                   | "60"         || [[wait: Duration.ofMinutes(45).getSeconds()],
                                                                                            [wait: Duration.ofHours(48).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: 45 + Duration.ofHours(47).toMinutes(), minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(48).toMinutes(), step: "60"]]
+                                                                                           [minutesFromInitialStartToCanaryStart: 45 + Duration.ofHours(47).toMinutes(), minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(48).toMinutes(), step: "PT1M"]]
     "45"                         | "0"                                  | "60"         || [[wait: Duration.ofMinutes(45).getSeconds()],
                                                                                            [wait: Duration.ofHours(48).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: 45 + Duration.ofHours(47).toMinutes(), minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(48).toMinutes(), step: "60"]]
+                                                                                           [minutesFromInitialStartToCanaryStart: 45 + Duration.ofHours(47).toMinutes(), minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(48).toMinutes(), step: "PT1M"]]
     "45"                         | Duration.ofHours(8).toMinutes() + "" | "60"         || [[wait: Duration.ofMinutes(45).getSeconds()],
                                                                                            [wait: Duration.ofHours(8).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: 45 + Duration.ofHours(7).toMinutes(), minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(8).toMinutes(), step: "60"],
+                                                                                           [minutesFromInitialStartToCanaryStart: 45 + Duration.ofHours(7).toMinutes(), minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(8).toMinutes(), step: "PT1M"],
                                                                                            [wait: Duration.ofHours(8).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: 45 + Duration.ofHours(15).toMinutes(), minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(16).toMinutes(), step: "60"],
+                                                                                           [minutesFromInitialStartToCanaryStart: 45 + Duration.ofHours(15).toMinutes(), minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(16).toMinutes(), step: "PT1M"],
                                                                                            [wait: Duration.ofHours(8).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: 45 + Duration.ofHours(23).toMinutes(), minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(24).toMinutes(), step: "60"],
+                                                                                           [minutesFromInitialStartToCanaryStart: 45 + Duration.ofHours(23).toMinutes(), minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(24).toMinutes(), step: "PT1M"],
                                                                                            [wait: Duration.ofHours(8).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: 45 + Duration.ofHours(31).toMinutes(), minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(32).toMinutes(), step: "60"],
+                                                                                           [minutesFromInitialStartToCanaryStart: 45 + Duration.ofHours(31).toMinutes(), minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(32).toMinutes(), step: "PT1M"],
                                                                                            [wait: Duration.ofHours(8).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: 45 + Duration.ofHours(39).toMinutes(), minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(40).toMinutes(), step: "60"],
+                                                                                           [minutesFromInitialStartToCanaryStart: 45 + Duration.ofHours(39).toMinutes(), minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(40).toMinutes(), step: "PT1M"],
                                                                                            [wait: Duration.ofHours(8).getSeconds()],
-                                                                                           [minutesFromInitialStartToCanaryStart: 45 + Duration.ofHours(47).toMinutes(), minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(48).toMinutes(), step: "60"]]
+                                                                                           [minutesFromInitialStartToCanaryStart: 45 + Duration.ofHours(47).toMinutes(), minutesFromInitialStartToCanaryEnd: 45 + Duration.ofHours(48).toMinutes(), step: "PT1M"]]
   }
 
   def "should propagate additional attributes"() {
@@ -364,12 +365,13 @@ class KayentaCanaryStageSpec extends Specification {
         canaryConfig: [
           metricsAccountName        : "atlas-acct-1",
           canaryConfigId            : "MySampleAtlasCanaryConfig",
+          step                      : "PT1M",
           scopes                    : [[
                                          controlScope       : "some.host.node",
                                          experimentScope    : "some.other.host.node",
-                                         step               : "PT60S",
                                          extendedScopeParams: [type: "node"]
                                        ]],
+          scoreThresholds           : [marginal: 75, pass: 90],
           canaryAnalysisIntervalMins: Duration.ofHours(6).toMinutes(),
           lifetimeHours             : "12"
         ]
@@ -387,9 +389,9 @@ class KayentaCanaryStageSpec extends Specification {
 
     then:
     summary == [[wait: Duration.ofHours(6).getSeconds()],
-                [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: Duration.ofHours(6).toMinutes(), step: "PT60S", metricsAccountName: "atlas-acct-1", extendedScopeParams: [type: "node"]],
+                [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: Duration.ofHours(6).toMinutes(), step: "PT1M", metricsAccountName: "atlas-acct-1", extendedScopeParams: [type: "node"]],
                 [wait: Duration.ofHours(6).getSeconds()],
-                [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: Duration.ofHours(12).toMinutes(), step: "PT60S", metricsAccountName: "atlas-acct-1", extendedScopeParams: [type: "node"]]]
+                [minutesFromInitialStartToCanaryStart: 0, minutesFromInitialStartToCanaryEnd: Duration.ofHours(12).toMinutes(), step: "PT1M", metricsAccountName: "atlas-acct-1", extendedScopeParams: [type: "node"]]]
   }
 
   def collectSummary(List<Stage> aroundStages, Instant startTimeInstant, String scopeName = "default") {

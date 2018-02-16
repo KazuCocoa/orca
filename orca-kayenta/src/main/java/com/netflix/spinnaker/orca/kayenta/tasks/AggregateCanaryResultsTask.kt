@@ -20,7 +20,7 @@ import com.netflix.spinnaker.orca.ExecutionStatus.SUCCEEDED
 import com.netflix.spinnaker.orca.ExecutionStatus.TERMINAL
 import com.netflix.spinnaker.orca.Task
 import com.netflix.spinnaker.orca.TaskResult
-import com.netflix.spinnaker.orca.kayenta.model.CanaryConfig
+import com.netflix.spinnaker.orca.kayenta.model.KayentaCanaryContext
 import com.netflix.spinnaker.orca.kayenta.pipeline.RunCanaryPipelineStage
 import com.netflix.spinnaker.orca.pipeline.model.Stage
 import org.slf4j.LoggerFactory
@@ -32,7 +32,7 @@ class AggregateCanaryResultsTask : Task {
   private val log = LoggerFactory.getLogger(javaClass)
 
   override fun execute(stage: Stage): TaskResult {
-    val canaryConfig = stage.mapTo("/canaryConfig", CanaryConfig::class.java)
+    val canaryConfig = stage.mapTo("/canaryConfig", KayentaCanaryContext::class.java)
     val runCanaryStages = stage.execution.stages.filter { it -> it.type == RunCanaryPipelineStage.STAGE_TYPE }
     val runCanaryScores = runCanaryStages.map { it -> it.mapTo("/canaryScore", Number::class.java) }.map(Number::toDouble)
     val finalCanaryScore = runCanaryScores[runCanaryScores.size - 1]

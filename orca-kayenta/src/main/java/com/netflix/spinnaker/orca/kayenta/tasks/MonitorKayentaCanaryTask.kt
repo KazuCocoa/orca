@@ -21,7 +21,7 @@ import com.netflix.spinnaker.orca.ExecutionStatus.*
 import com.netflix.spinnaker.orca.OverridableTimeoutRetryableTask
 import com.netflix.spinnaker.orca.TaskResult
 import com.netflix.spinnaker.orca.kayenta.KayentaService
-import com.netflix.spinnaker.orca.kayenta.model.Thresholds
+import com.netflix.spinnaker.orca.kayenta.Thresholds
 import com.netflix.spinnaker.orca.pipeline.model.Stage
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
