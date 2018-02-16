@@ -71,9 +71,9 @@ allprojects {
     resolutionStrategy {
       force "org.antlr:antlr-runtime:3.5.2"
       eachDependency {
-        if (it.requested.group.startsWith("com.fasterxml.jackson")) {
-          it.useVersion spinnaker.version('jackson')
-        }
+//        if (it.requested.group.startsWith("com.fasterxml.jackson")) {
+//          it.useVersion spinnaker.version('jackson')
+//        }
         if (it.requested.group == "com.netflix.rxjava" && it.requested.name == "rxjava-core") {
           it.useTarget group: "io.reactivex", name: "rxjava", version: "1.0.12"
         }

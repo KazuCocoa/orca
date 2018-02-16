@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package com.netflix.spinnaker.orca.kayenta.model;
+package com.netflix.spinnaker.orca.kayenta.model
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Collections.emptyMap
 
-public class Thresholds {
-  @JsonProperty public Double pass;
-  @JsonProperty public Double marginal;
-}
+data class RunCanaryContext(
+  val metricsAccountName: String?,
+  val storageAccountName: String?,
+  val canaryConfigId: String?,
+  val scopes: Map<String, Map<String, CanaryScope>> = emptyMap(),
+  val scoreThresholds: Thresholds = Thresholds()
+)
