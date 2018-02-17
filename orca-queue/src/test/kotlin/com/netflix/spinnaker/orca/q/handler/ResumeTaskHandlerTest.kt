@@ -18,9 +18,14 @@ package com.netflix.spinnaker.orca.q.handler
 
 import com.netflix.spinnaker.orca.ExecutionStatus.PAUSED
 import com.netflix.spinnaker.orca.ExecutionStatus.RUNNING
+import com.netflix.spinnaker.orca.fixture.pipeline
+import com.netflix.spinnaker.orca.fixture.stage
+import com.netflix.spinnaker.orca.fixture.task
 import com.netflix.spinnaker.orca.pipeline.model.Execution.ExecutionType.PIPELINE
 import com.netflix.spinnaker.orca.pipeline.persistence.ExecutionRepository
-import com.netflix.spinnaker.orca.q.*
+import com.netflix.spinnaker.orca.q.DummyTask
+import com.netflix.spinnaker.orca.q.ResumeTask
+import com.netflix.spinnaker.orca.q.RunTask
 import com.netflix.spinnaker.q.Queue
 import com.netflix.spinnaker.spek.shouldEqual
 import com.nhaarman.mockito_kotlin.*

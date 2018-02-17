@@ -15,10 +15,12 @@
  */
 
 apply from: "$rootDir/gradle/kotlin.gradle"
+apply from: "$rootDir/gradle/spek.gradle"
 apply from: "$rootDir/gradle/spock.gradle"
 
 dependencies {
   compile project(":orca-retrofit")
 
+  testCompile "org.assertj:assertj-core:3.9.0"
   testCompile project(":orca-test")
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Netflix, Inc.
+ * Copyright 2018 Netflix, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.netflix.spinnaker.orca.q
+package com.netflix.spinnaker.orca.fixture
 
 import com.netflix.spinnaker.orca.pipeline.model.DefaultTrigger
 import com.netflix.spinnaker.orca.pipeline.model.Execution
@@ -22,6 +22,7 @@ import com.netflix.spinnaker.orca.pipeline.model.Execution.ExecutionType.PIPELIN
 import com.netflix.spinnaker.orca.pipeline.model.Stage
 import com.netflix.spinnaker.orca.pipeline.model.SyntheticStageOwner.STAGE_BEFORE
 import com.netflix.spinnaker.orca.pipeline.model.Task
+import com.netflix.spinnaker.orca.pipeline.tasks.NoOpTask
 import java.lang.System.currentTimeMillis
 
 /**
@@ -68,11 +69,24 @@ fun Stage.stage(init: Stage.() -> Unit): Stage {
 }
 
 /**
+ * Build a stage outside the context of an execution.
+ */
+fun stage(init: Stage.() -> Unit): Stage {
+  val stage = Stage()
+  stage.execution = pipeline()
+  stage.type = "test"
+  stage.refId = "1"
+  stage.execution.stages.add(stage)
+  stage.init()
+  return stage
+}
+
+/**
  * Build a task. Use in the context of [#stage].
  */
 fun Stage.task(init: Task.() -> Unit): Task {
   val task = Task()
-  task.implementingClass = DummyTask::class.java.name
+  task.implementingClass = NoOpTask::class.java.name
   task.name = "dummy"
   tasks.add(task)
   task.init()
