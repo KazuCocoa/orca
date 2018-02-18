@@ -165,7 +165,10 @@ class KayentaCanaryStage(
     return requestScopes
   }
 
-  override fun getType(): String {
-    return "kayentaCanary"
+  override fun getType() = STAGE_TYPE
+
+  companion object {
+    @JvmStatic
+    val STAGE_TYPE = "kayentaCanary"
   }
 }
